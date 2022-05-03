@@ -1,0 +1,9 @@
+{
+  "title": "Food Source",
+  "@title": {
+    "description": "Title for the Food Source Application",
+    "type": "text"
+  },
+  "tagline": "Healthy body start with healthy food",
+  "addFood": "Add Recipe"
+}
