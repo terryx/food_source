@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:food_source/controller/recipe.dart';
 import 'package:food_source/localization.dart';
+import 'package:food_source/widget/recipe_list.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class HomeView extends StatefulHookConsumerWidget {
@@ -68,20 +70,7 @@ class HomeViewMainContent extends HookConsumerWidget {
         ),
         const Divider(),
         Expanded(
-          child: ListView.separated(
-            key: const ValueKey('recipe_list'),
-            // padding: const EdgeInsets.all(0),
-            itemCount: 25,
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            separatorBuilder: (BuildContext context, int index) =>
-            const Divider(),
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                title: Text('item $index'),
-              );
-            },
-          ),
+          child: RecipeList(recipes: ref.read(recipesProvider)),
         ),
       ],
     );

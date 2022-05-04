@@ -38,8 +38,7 @@ class AddFoodViewState extends ConsumerState<AddFoodView> {
           ingrController.clear();
           descController.clear();
 
-          final a = ref.read(recipesProvider);
-          print(a.toList());
+          Navigator.popAndPushNamed(context, '/home');
         },
         label: Text(Lz.of(context)!.save),
         backgroundColor: Colors.green,

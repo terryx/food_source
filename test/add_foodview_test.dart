@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:food_source/controller/recipe.dart';
 
 import 'package:food_source/main.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -18,17 +19,39 @@ void main() {
     expect(find.byKey(key), findsOneWidget);
   });
 
+  // Low level
   testWidgets('Can add new recipe', (WidgetTester tester) async {
-    await tester.pumpWidget(const ProviderScope(child: MyApp(initialRoute: '/add_food')));
+    WidgetRef? ref;
+    final myapp = ProviderScope(
+      child: Consumer(
+        builder: (c, r, _) {
+          ref = r;
+
+         return const MyApp(initialRoute: '/add_food');
+        },
+      ),
+    );
+    await tester.pumpWidget(myapp);
 
     final nameKey = find.byKey(const Key('Name'));
     final ingrKey = find.byKey(const Key('Ingredients'));
     final descKey = find.byKey(const Key('Description'));
-    final saveKey = find.byKey( const Key('SaveFood'));
+    final saveKey = find.byKey(const Key('SaveFood'));
+
+    /// Nothing is saved in memory initially, should be no recipe
+    expect(ref?.read(recipesProvider).isEmpty, true);
 
     await tester.enterText(nameKey, 'Name Test');
     await tester.enterText(ingrKey, 'Ingredients Test');
     await tester.enterText(descKey, 'Description Test');
     await tester.tap(saveKey);
+
+    /// 1 item is added
+    expect(ref?.read(recipesProvider).isEmpty, false);
+
+    /// At home screen should have new recipe
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('recipe_list')), findsOneWidget);
+    expect(find.text('Name Test'), findsOneWidget);
   });
 }
