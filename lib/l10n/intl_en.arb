@@ -5,5 +5,6 @@
     "type": "text"
   },
   "tagline": "Healthy body start with healthy food",
-  "addFood": "Add Recipe"
+  "addFood": "Add Recipe",
+  "save": "Save"
 }

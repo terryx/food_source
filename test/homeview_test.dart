@@ -43,8 +43,8 @@ void main() {
     late StateSetter stateSetter;
 
     List<Recipe> recipes = <Recipe>[
-      const Recipe(name: 'Steak', ingredients: 'beef ribeye, salt, pepper'),
-      const Recipe(name: 'Sear Salmon', description: 'Pan sear salmon'),
+      Recipe.add(name: 'Steak', ingredients: 'beef ribeye, salt, pepper'),
+      Recipe.add(name: 'Sear Salmon', description: 'Pan sear salmon'),
     ];
 
     await tester.pumpWidget(
@@ -65,7 +65,7 @@ void main() {
     expect(find.byKey(key), findsOneWidget);
     expect(find.text('Sear Salmon'), findsOneWidget);
 
-    stateSetter(() => recipes.add(const Recipe(name: 'Tomato Pasta')));
+    stateSetter(() => recipes.add(Recipe.add(name: 'Tomato Pasta')));
     await tester.pump();
     expect(find.text('Tomato Pasta'), findsOneWidget);
   });
