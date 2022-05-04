@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:food_source/controller/recipe.dart';
+import 'package:food_source/localization.dart';
 
 import 'package:food_source/main.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -19,7 +20,6 @@ void main() {
     expect(find.byKey(key), findsOneWidget);
   });
 
-  // Low level
   testWidgets('Can add new recipe', (WidgetTester tester) async {
     WidgetRef? ref;
     final myapp = ProviderScope(
@@ -27,7 +27,7 @@ void main() {
         builder: (c, r, _) {
           ref = r;
 
-         return const MyApp(initialRoute: '/add_food');
+          return const MyApp(initialRoute: '/add_food');
         },
       ),
     );
@@ -53,5 +53,25 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('recipe_list')), findsOneWidget);
     expect(find.text('Name Test'), findsOneWidget);
+  });
+
+  testWidgets('Cannot add new recipe if no name present',
+      (WidgetTester tester) async {
+    final key = GlobalKey();
+    final myapp = ProviderScope(
+      child: MyApp(
+        home: Container(key: key),
+        initialRoute: '/add_food',
+      ),
+    );
+
+    await tester.pumpWidget(myapp);
+
+    final saveKey = find.byKey(const Key('SaveFood'));
+    await tester.tap(saveKey);
+    await tester.pump();
+
+    final requiredText = find.text(Lz.of(key.currentContext!)!.requiredText);
+    expect(requiredText, findsOneWidget);
   });
 }

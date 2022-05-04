@@ -28,7 +28,11 @@ class AddFoodViewState extends ConsumerState<AddFoodView> {
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('SaveFood'),
         onPressed: () {
-          ref.read(recipesProvider.notifier).add(
+          if (!_formKey.currentState!.validate()) {
+            return;
+          }
+
+           ref.read(recipesProvider.notifier).add(
             name: nameController.text,
             ingredients: ingrController.text,
             description: descController.text,
@@ -38,7 +42,7 @@ class AddFoodViewState extends ConsumerState<AddFoodView> {
           ingrController.clear();
           descController.clear();
 
-          Navigator.popAndPushNamed(context, '/home');
+          Navigator.pop(context);
         },
         label: Text(Lz.of(context)!.save),
         backgroundColor: Colors.green,
@@ -59,7 +63,7 @@ class AddFoodViewState extends ConsumerState<AddFoodView> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
+                    return Lz.of(context)!.requiredText;
                   }
                   return null;
                 },
@@ -76,12 +80,6 @@ class AddFoodViewState extends ConsumerState<AddFoodView> {
                   border: UnderlineInputBorder(),
                   labelText: 'Ingredients',
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
               ),
             ),
             Padding(
@@ -95,12 +93,6 @@ class AddFoodViewState extends ConsumerState<AddFoodView> {
                   border: UnderlineInputBorder(),
                   labelText: 'Description',
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
               ),
             )
           ],

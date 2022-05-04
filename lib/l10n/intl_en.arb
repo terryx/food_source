@@ -6,5 +6,10 @@
   },
   "tagline": "Healthy body start with healthy food",
   "addFood": "Add Recipe",
-  "save": "Save"
+  "save": "Save",
+  "requiredText": "Please enter some text",
+  "@requiredText": {
+    "description": "Validation text",
+    "type": "text"
+  }
 }

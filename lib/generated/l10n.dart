@@ -89,6 +89,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Please enter some text`
+  String get requiredText {
+    return Intl.message(
+      'Please enter some text',
+      name: 'requiredText',
+      desc: 'Validation text',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
