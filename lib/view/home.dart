@@ -76,7 +76,11 @@ class HomeViewMainContent extends HookConsumerWidget {
         ),
         Expanded(
           flex: 3,
-          child: RecipeList(recipes: recipes),
+          child: RecipeList(
+            recipes: recipes,
+            onTap: (r) =>
+                Navigator.pushNamed(context, '/edit_food', arguments: r),
+          ),
         ),
       ],
     );

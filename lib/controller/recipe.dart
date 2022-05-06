@@ -22,10 +22,22 @@ class RecipeState extends StateNotifier<List<Recipe>> {
     String? ingredients,
     String? description,
   }) {
-    // state = [
-    //   ...state,
-    //
-    // ]
+    final recipe = state.firstWhere((Recipe element) => element.id == id);
+    state.removeWhere((Recipe element) => element.id == id);
+
+    state = [
+      ...state,
+      Recipe(
+        id: recipe.id,
+        name: name,
+        ingredients: ingredients,
+        description: description,
+      )
+    ];
+  }
+
+  void remove(String id) {
+    state = state.where((Recipe element) => element.id != id).toList();
   }
 }
 
@@ -53,11 +65,3 @@ final recipesSearcher = StateNotifierProvider<RecipeSearchState, List<Recipe>>((
 
   return RecipeSearchState(originalRecipes);
 });
-
-// /// Example in https://github.com/rrousselGit/riverpod/blob/master/examples/todos/lib/main.dart#L54
-// final filteredRecipes = Provider<List<Recipe>>((ref) {
-//   final filter = ref.watch(recipesProvider);
-//
-//   print(filter);
-//   return filter;
-// });

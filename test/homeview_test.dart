@@ -12,6 +12,7 @@ import 'package:food_source/main.dart';
 import 'package:food_source/model/recipe.dart';
 import 'package:food_source/view/home.dart';
 import 'package:food_source/widget/recipe_list.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// 3 Level of widget/component test
 /// The high level focus on screen, you ensure the screen is loaded without UI issues.
@@ -23,13 +24,17 @@ void main() {
   /// High level
   testWidgets('Add Food button is visible by widget construction',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp(home: HomeView()));
+    await tester.pumpWidget(
+      const ProviderScope(child: MyApp(home: HomeView())),
+    );
     expect(find.byKey(key), findsOneWidget);
   });
 
   testWidgets('Add Food button is visible by route',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp(initialRoute: '/home'));
+    await tester.pumpWidget(
+      const ProviderScope(child: MyApp(initialRoute: '/home')),
+    );
     expect(find.byKey(key), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('AddFood')));
@@ -47,6 +52,11 @@ void main() {
       Recipe.add(name: 'Sear Salmon', description: 'Pan sear salmon'),
     ];
 
+    const newRecipeName = 'Tomato Pasta';
+    onTap(Recipe r) {
+      expect(r.name, newRecipeName);
+    }
+
     await tester.pumpWidget(
       MyApp(
         home: Scaffold(
@@ -55,7 +65,7 @@ void main() {
                 void Function(void Function()) setState) {
               stateSetter = setState;
 
-              return RecipeList(recipes: recipes);
+              return RecipeList(recipes: recipes, onTap: onTap);
             },
           ),
         ),
@@ -65,8 +75,12 @@ void main() {
     expect(find.byKey(key), findsOneWidget);
     expect(find.text('Sear Salmon'), findsOneWidget);
 
-    stateSetter(() => recipes.add(Recipe.add(name: 'Tomato Pasta')));
+    stateSetter(() => recipes.add(Recipe.add(name: newRecipeName)));
     await tester.pump();
-    expect(find.text('Tomato Pasta'), findsOneWidget);
+
+    final item = find.text(newRecipeName);
+    expect(item, findsOneWidget);
+
+    await tester.tap(item);
   });
 }

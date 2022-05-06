@@ -14,6 +14,12 @@ class EditFoodView extends StatefulHookConsumerWidget {
 
 class EditFoodViewState extends ConsumerState<EditFoodView> {
   final _formKey = GlobalKey<FormState>();
+  static const scaffoldKey = Key('EditFoodForm');
+  static const textNameKey = Key('Name');
+  static const textIngrKey = Key('Ingredients');
+  static const textDescKey = Key('Description');
+  static const saveFoodKey = Key('SaveFood');
+  static const delFoodKey = Key('DeleteFood');
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +29,22 @@ class EditFoodViewState extends ConsumerState<EditFoodView> {
     final descController = useTextEditingController(text: args.description);
 
     return Scaffold(
-      key: const Key('EditFoodForm'),
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text(Lz.of(context)!.addFood),
+        actions: [
+          IconButton(
+            key: delFoodKey,
+            icon: const Icon(Icons.delete_rounded, color: Colors.redAccent),
+            onPressed: () {
+              ref.read(recipesProvider.notifier).remove(args.id);
+              Navigator.pop(context);
+            },
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        key: const Key('SaveFood'),
+        key: saveFoodKey,
         onPressed: () {
           if (!_formKey.currentState!.validate()) {
             return;
@@ -58,7 +74,7 @@ class EditFoodViewState extends ConsumerState<EditFoodView> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
-                key: const Key('Name'),
+                key: textNameKey,
                 controller: nameController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),

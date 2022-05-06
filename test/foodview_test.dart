@@ -11,6 +11,7 @@ import 'package:food_source/controller/recipe.dart';
 import 'package:food_source/localization.dart';
 
 import 'package:food_source/main.dart';
+import 'package:food_source/view/edit_food.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 Future<void> _addRecipe(WidgetTester tester, [name = 'Name Test']) async {
@@ -85,9 +86,7 @@ void main() {
   });
 
   testWidgets('Search food recipes', (WidgetTester tester) async {
-    const myapp = ProviderScope(
-      child: MyApp(initialRoute: '/home'),
-    );
+    const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
 
     await tester.pumpWidget(myapp);
     await _addRecipe(tester, 'abc');
@@ -97,5 +96,46 @@ void main() {
     await tester.pump();
     expect(find.text('xyz'), findsOneWidget);
     expect(find.text('abc'), findsNothing);
+  });
+
+  testWidgets('Can edit recipe', (WidgetTester tester) async {
+    const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
+
+    await tester.pumpWidget(myapp);
+    await _addRecipe(tester, 'Pineapple');
+    await tester.tap(find.text('Pineapple'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(EditFoodViewState.scaffoldKey), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'Pineapple'), findsOneWidget);
+
+    await tester.enterText(
+        find.widgetWithText(TextFormField, 'Pineapple'), 'Pin abc');
+    await tester.enterText(
+        find.widgetWithText(TextFormField, 'Ingredients Test'), 'Ing abc');
+    await tester.enterText(
+        find.widgetWithText(TextFormField, 'Description Test'), 'Des abc');
+    await tester.tap(find.byKey(EditFoodViewState.saveFoodKey));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(EditFoodViewState.scaffoldKey), findsNothing);
+    expect(find.widgetWithText(ListTile, 'Pineapple'), findsNothing);
+    expect(find.widgetWithText(ListTile, 'Pin abc'), findsOneWidget);
+  });
+
+  testWidgets('Can remove recipe', (WidgetTester tester) async {
+    const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
+
+    await tester.pumpWidget(myapp);
+    await _addRecipe(tester, 'Pineapple');
+    await tester.tap(find.text('Pineapple'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(EditFoodViewState.delFoodKey));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(EditFoodViewState.scaffoldKey), findsNothing);
+    expect(find.widgetWithText(ListTile, 'Pineapple'), findsNothing);
+    expect(find.byType(ListTile), findsNothing);
   });
 }
