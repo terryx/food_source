@@ -13,6 +13,23 @@ import 'package:food_source/localization.dart';
 import 'package:food_source/main.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+Future<void> _addRecipe(WidgetTester tester, [name = 'Name Test']) async {
+  await tester.tap(find.byKey(const Key('AddFood')));
+  await tester.pumpAndSettle();
+
+  final nameKey = find.byKey(const Key('Name'));
+  final ingrKey = find.byKey(const Key('Ingredients'));
+  final descKey = find.byKey(const Key('Description'));
+  final saveKey = find.byKey(const Key('SaveFood'));
+
+  await tester.enterText(nameKey, name);
+  await tester.enterText(ingrKey, 'Ingredients Test');
+  await tester.enterText(descKey, 'Description Test');
+
+  await tester.tap(saveKey);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets('Add Food view is visible', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp(initialRoute: '/add_food'));
@@ -27,32 +44,24 @@ void main() {
         builder: (c, r, _) {
           ref = r;
 
-          return const MyApp(initialRoute: '/add_food');
+          return const MyApp(initialRoute: '/home');
         },
       ),
     );
     await tester.pumpWidget(myapp);
 
-    final nameKey = find.byKey(const Key('Name'));
-    final ingrKey = find.byKey(const Key('Ingredients'));
-    final descKey = find.byKey(const Key('Description'));
-    final saveKey = find.byKey(const Key('SaveFood'));
-
     /// Nothing is saved in memory initially, should be no recipe
     expect(ref?.read(recipesProvider).isEmpty, true);
 
-    await tester.enterText(nameKey, 'Name Test');
-    await tester.enterText(ingrKey, 'Ingredients Test');
-    await tester.enterText(descKey, 'Description Test');
-    await tester.tap(saveKey);
+    /// Verify no UI issues when there are many items in the list
+    final list = Iterable<int>.generate(25).toList();
+    for (var _ in list) {
+      await _addRecipe(tester);
+    }
 
-    /// 1 item is added
-    expect(ref?.read(recipesProvider).isEmpty, false);
-
-    /// At home screen should have new recipe
-    await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('recipe_list')), findsOneWidget);
-    expect(find.text('Name Test'), findsOneWidget);
+    expect(find.byKey(const Key('RecipeList')), findsOneWidget);
+    expect(ref?.read(recipesProvider).length, 25);
+    expect(find.text('Name Test'), findsNWidgets(5));
   });
 
   testWidgets('Cannot add new recipe if no name present',
@@ -73,5 +82,20 @@ void main() {
 
     final requiredText = find.text(Lz.of(key.currentContext!)!.requiredText);
     expect(requiredText, findsOneWidget);
+  });
+
+  testWidgets('Search food recipes', (WidgetTester tester) async {
+    const myapp = ProviderScope(
+      child: MyApp(initialRoute: '/home'),
+    );
+
+    await tester.pumpWidget(myapp);
+    await _addRecipe(tester, 'abc');
+    await _addRecipe(tester, 'xyz');
+
+    await tester.enterText(find.byType(TextField), 'xy');
+    await tester.pump();
+    expect(find.text('xyz'), findsOneWidget);
+    expect(find.text('abc'), findsNothing);
   });
 }

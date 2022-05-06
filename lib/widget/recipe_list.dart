@@ -13,9 +13,8 @@ class RecipeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      key: const ValueKey('recipe_list'),
+      key: const Key('RecipeList'),
       itemCount: recipes.length,
-      scrollDirection: Axis.vertical,
       shrinkWrap: true,
       separatorBuilder: (BuildContext context, int index) => const Divider(),
       itemBuilder: (BuildContext context, int index) {

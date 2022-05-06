@@ -4,14 +4,9 @@ import 'package:food_source/localization.dart';
 import 'package:food_source/widget/recipe_list.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class HomeView extends StatefulHookConsumerWidget {
+class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
 
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => HomeViewState();
-}
-
-class HomeViewState extends ConsumerState<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,43 +32,53 @@ class HomeViewMainContent extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final originRecipes = ref.watch(recipesProvider);
+    final recipes = ref.watch(recipesSearcher);
+
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Flexible(
-          child: TextField(
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.green,
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextField(
+                onChanged: (v) {
+                  if (v.isEmpty) {
+                    ref.read(recipesSearcher.notifier).restore(originRecipes);
+                  } else {
+                    ref.read(recipesSearcher.notifier).filter(v);
+                  }
+                },
+                decoration: const InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.green,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.green,
+                    ),
+                  ),
+                  hintText: 'Enter a search term',
                 ),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.green,
+              const Divider(height: 25, thickness: 0, color: Colors.white),
+              const Text(
+                'Recipes',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              hintText: 'Enter a search term',
-            ),
+            ],
           ),
         ),
-        const Divider(height: 25, thickness: 0, color: Colors.white),
-        const Flexible(
-          child: Text(
-            'Recipes',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const Divider(),
         Expanded(
-          child: RecipeList(recipes: ref.read(recipesProvider)),
+          flex: 3,
+          child: RecipeList(recipes: recipes),
         ),
       ],
     );
   }
-
 }

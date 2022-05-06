@@ -18,7 +18,7 @@ import 'package:food_source/widget/recipe_list.dart';
 /// The med level focus on widget collection, you ensure multiple widget loaded without UI issues.
 /// The low level focus on single widget, you ensure a widget can work in isolation.
 void main() {
-  const key = ValueKey('recipe_list');
+  const key = Key('RecipeList');
 
   /// High level
   testWidgets('Add Food button is visible by widget construction',

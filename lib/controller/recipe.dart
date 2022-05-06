@@ -15,9 +15,49 @@ class RecipeState extends StateNotifier<List<Recipe>> {
       ),
     ];
   }
+
+  void update({
+    required String id,
+    required String name,
+    String? ingredients,
+    String? description,
+  }) {
+    // state = [
+    //   ...state,
+    //
+    // ]
+  }
 }
+
+class RecipeSearchState extends StateNotifier<List<Recipe>> {
+  RecipeSearchState([List<Recipe>? initialRecipes]) : super(initialRecipes ?? []);
+
+  void filter(String v) {
+    state = state.where((element) => element.name.contains(v)).toList();
+  }
+
+  void restore(List<Recipe> r) {
+    state = r;
+  }
+}
+
+// class RecipeSearchState extends
 
 /// Params takes controller and an object
 final recipesProvider = StateNotifierProvider<RecipeState, List<Recipe>>((ref) {
   return RecipeState();
 });
+
+final recipesSearcher = StateNotifierProvider<RecipeSearchState, List<Recipe>>((ref) {
+  final originalRecipes = ref.watch(recipesProvider);
+
+  return RecipeSearchState(originalRecipes);
+});
+
+// /// Example in https://github.com/rrousselGit/riverpod/blob/master/examples/todos/lib/main.dart#L54
+// final filteredRecipes = Provider<List<Recipe>>((ref) {
+//   final filter = ref.watch(recipesProvider);
+//
+//   print(filter);
+//   return filter;
+// });
