@@ -7,58 +7,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:food_source/controller/recipe.dart';
-
 import 'package:food_source/main.dart';
 import 'package:food_source/model/recipe.dart';
-import 'package:food_source/view/home.dart';
 import 'package:food_source/widget/recipe_list.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'mock/recipe_vault.dart';
-
-
-/// 3 Level of widget/component test
-/// The high level focus on screen, you ensure the screen is loaded without UI issues.
-/// The med level focus on widget collection, you ensure multiple widget loaded without UI issues.
-/// The low level focus on single widget, you ensure a widget can work in isolation.
 void main() {
   const key = Key('RecipeList');
-  setUp(() async {
-    RecipeVault.instance = MockRecipeVault();
-  });
 
-  /// High level
-  /// Refer [FutureProvider] test at https://github.com/rrousselGit/riverpod/blob/master/packages/flutter_riverpod/test/future_provider_test.dart#L27
-  testWidgets('Add Food button is visible by widget construction',
-      (WidgetTester tester) async {
-
-    await tester.pumpWidget(
-      const ProviderScope(child: MyApp(home: HomeView())),
-    );
-
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    await tester.pump();
-
-    expect(find.byKey(const Key('RecipeList')), findsOneWidget);
-  });
-
-  testWidgets('Add Food button is visible by route',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const ProviderScope(child: MyApp(initialRoute: '/home')),
-    );
-    await tester.pump();
-    expect(find.byKey(key), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('AddFood')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('AddFoodForm')));
-  });
-
-  /// Low level
   /// Example in https://github.com/flutter/flutter/blob/master/packages/flutter/test/widgets/list_view_test.dart#L115
-  testWidgets('Home view recipes list', (WidgetTester tester) async {
+  testWidgets('Homeview recipes list', (WidgetTester tester) async {
     late StateSetter stateSetter;
 
     List<Recipe> recipes = <Recipe>[

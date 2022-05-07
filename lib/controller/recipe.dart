@@ -54,23 +54,6 @@ Future<void> _writeFile(List<Recipe> state) async {
   await file?.writeAsString(encoded);
 }
 
-
-
-// /// File Storage
-// @visibleForTesting
-// Future<String> get localPath async {
-//   final directory = await getApplicationDocumentsDirectory();
-//
-//   return directory.path;
-// }
-//
-// @visibleForTesting
-// Future<File> get localFile async {
-//   final path = await localPath;
-//
-//   return File('$path/recipes.txt');
-// }
-
 // An object that controls a list of [Recipe]
 class RecipeState extends StateNotifier<List<Recipe>> {
   RecipeState([List<Recipe>? initialRecipes]) : super(initialRecipes ?? []);

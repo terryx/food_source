@@ -29,6 +29,8 @@ class HomeView extends StatelessWidget {
 class HomeViewMainContent extends HookConsumerWidget {
   const HomeViewMainContent({Key? key}) : super(key: key);
 
+  static const searchKey = Key('SearchRecipe');
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     /// Similar to RDBMS design, read from origin/replica, write to cache/database
@@ -38,13 +40,14 @@ class HomeViewMainContent extends HookConsumerWidget {
 
     return cacheRecipes.when(
       loading: () => const CircularProgressIndicator(),
-      error: (err, stack) => Text('Error: $err'),
+      error: (err, stack) => const Text('Error'),
       data: (caches) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Flexible(
               child: TextField(
+                key: searchKey,
                 onChanged: (v) {
                   if (v.isEmpty) {
                     ref.read(recipesSearcher.notifier).restore(originRecipes);

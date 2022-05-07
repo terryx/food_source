@@ -1,20 +1,14 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:food_source/controller/recipe.dart';
 import 'package:food_source/localization.dart';
 
 import 'package:food_source/main.dart';
+import 'package:food_source/model/recipe.dart';
 import 'package:food_source/view/edit_food.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'mock/recipe_vault.dart';
+import '../mock/recipe_vault.dart';
 
 Future<void> _addRecipe(WidgetTester tester, [name = 'Name Test']) async {
   await tester.tap(find.byKey(const Key('AddFood')));
@@ -105,28 +99,41 @@ void main() {
   });
 
   testWidgets('Can edit recipe', (WidgetTester tester) async {
-    const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
+    RecipeVault.instance = MockRecipeVault(
+      initialRecipes: [Recipe.add(name: 'Pineapple')],
+    );
+    WidgetRef? ref;
+    final myapp = ProviderScope(
+      child: Consumer(
+        builder: (c, r, _) {
+          ref = r;
+
+          return const MyApp(initialRoute: '/home');
+        },
+      ),
+    );
 
     await tester.pumpWidget(myapp);
-    await _addRecipe(tester, 'Pineapple');
+    await tester.pump();
     await tester.tap(find.text('Pineapple'));
     await tester.pumpAndSettle();
 
     expect(find.byKey(EditFoodViewState.scaffoldKey), findsOneWidget);
     expect(find.widgetWithText(TextFormField, 'Pineapple'), findsOneWidget);
 
-    await tester.enterText(
-        find.widgetWithText(TextFormField, 'Pineapple'), 'Pin abc');
-    await tester.enterText(
-        find.widgetWithText(TextFormField, 'Ingredients Test'), 'Ing abc');
-    await tester.enterText(
-        find.widgetWithText(TextFormField, 'Description Test'), 'Des abc');
+    await tester.enterText(find.byKey(EditFoodViewState.textNameKey), 'Pin a');
+    await tester.enterText(find.byKey(EditFoodViewState.textIngrKey), 'Ing a');
+    await tester.enterText(find.byKey(EditFoodViewState.textDescKey), 'Des a');
     await tester.tap(find.byKey(EditFoodViewState.saveFoodKey));
     await tester.pumpAndSettle();
 
     expect(find.byKey(EditFoodViewState.scaffoldKey), findsNothing);
     expect(find.widgetWithText(ListTile, 'Pineapple'), findsNothing);
-    expect(find.widgetWithText(ListTile, 'Pin abc'), findsOneWidget);
+
+    // Verify all data has updated successfully.
+    expect(ref?.read(recipesProvider).first.name, 'Pin a');
+    expect(ref?.read(recipesProvider).first.ingredients, 'Ing a');
+    expect(ref?.read(recipesProvider).first.description, 'Des a');
   });
 
   testWidgets('Cannot edit recipe without name', (WidgetTester tester) async {
@@ -140,8 +147,7 @@ void main() {
     expect(find.byKey(EditFoodViewState.scaffoldKey), findsOneWidget);
     expect(find.widgetWithText(TextFormField, 'Pineapple'), findsOneWidget);
 
-    await tester.enterText(
-        find.widgetWithText(TextFormField, 'Pineapple'), '');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Pineapple'), '');
     await tester.tap(find.byKey(EditFoodViewState.saveFoodKey));
     await tester.pumpAndSettle();
 
