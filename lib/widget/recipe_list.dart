@@ -20,14 +20,21 @@ class RecipeList extends StatelessWidget {
       key: const Key('RecipeList'),
       itemCount: recipes.length,
       shrinkWrap: true,
-      separatorBuilder: (BuildContext context, int index) => const Divider(),
+      separatorBuilder: (_, __) => const Divider(color: Colors.white24),
       itemBuilder: (BuildContext context, int index) {
         final Recipe item = recipes[index];
 
-        return ListTile(
-          title: Text(item.name),
-          subtitle: Text(item.description ?? ''),
-          onTap: () => onTap(item),
+        return Card(
+          color: Colors.greenAccent[100],
+          elevation: 0.7,
+          margin: const EdgeInsets.all(0),
+          child: ListTile(
+            title: Text(
+              item.name,
+              style: const TextStyle(color: Colors.black87),
+            ),
+            onTap: () => onTap(item),
+          ),
         );
       },
     );

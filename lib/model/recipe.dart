@@ -10,7 +10,7 @@ class Recipe {
     required this.name,
     this.ingredients,
     this.description,
-});
+  });
 
   static add({required name, ingredients, description}) {
     return Recipe(
@@ -25,4 +25,19 @@ class Recipe {
   final String name;
   final String? ingredients;
   final String? description;
+
+  Recipe.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        ingredients = json['ingredients'],
+        description = json['description'];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'ingredients': ingredients,
+      'description': description,
+    };
+  }
 }

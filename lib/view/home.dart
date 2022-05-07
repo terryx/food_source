@@ -21,7 +21,6 @@ class HomeView extends StatelessWidget {
         key: const Key('AddFood'),
         onPressed: () => Navigator.pushNamed(context, '/add_food'),
         label: Text(Lz.of(context)!.addFood),
-        backgroundColor: Colors.green,
       ),
     );
   }
@@ -32,16 +31,20 @@ class HomeViewMainContent extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    /// Similar to RDBMS design, read from origin/replica, write to cache/database
     final originRecipes = ref.watch(recipesProvider);
-    final recipes = ref.watch(recipesSearcher);
+    final searchRecipes = ref.watch(recipesSearcher); // warm cache
+    final cacheRecipes = ref.watch(recipesCache); // cold cache
 
-    return Column(
-      children: <Widget>[
-        Flexible(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextField(
+    return cacheRecipes.when(
+      loading: () => const CircularProgressIndicator(),
+      error: (err, stack) => Text('Error: $err'),
+      data: (caches) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Flexible(
+              child: TextField(
                 onChanged: (v) {
                   if (v.isEmpty) {
                     ref.read(recipesSearcher.notifier).restore(originRecipes);
@@ -63,26 +66,30 @@ class HomeViewMainContent extends HookConsumerWidget {
                   hintText: 'Enter a search term',
                 ),
               ),
-              const Divider(height: 25, thickness: 0, color: Colors.white),
-              const Text(
-                'Recipes',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+            ),
+            const Flexible(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 16),
+                child: Text(
+                  'Recipes',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: RecipeList(
-            recipes: recipes,
-            onTap: (r) =>
-                Navigator.pushNamed(context, '/edit_food', arguments: r),
-          ),
-        ),
-      ],
+            ),
+            Expanded(
+              flex: 3,
+              child: RecipeList(
+                recipes: searchRecipes,
+                onTap: (r) =>
+                    Navigator.pushNamed(context, '/edit_food', arguments: r),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

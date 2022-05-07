@@ -45,12 +45,12 @@ class EditFoodViewState extends ConsumerState<EditFoodView> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         key: saveFoodKey,
-        onPressed: () {
+        onPressed: () async {
           if (!_formKey.currentState!.validate()) {
             return;
           }
 
-          ref.read(recipesProvider.notifier).update(
+          await ref.read(recipesProvider.notifier).update(
                 id: args.id,
                 name: nameController.text,
                 ingredients: ingrController.text,

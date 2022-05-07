@@ -1,48 +1,126 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/widgets.dart';
 import 'package:food_source/model/recipe.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
+
+/// 1. Support riverpod provider
+/// 2. Support device disk access
+/// 3. Support a separated search for cleaner data manipulation
+class RecipeVault {
+  static RecipeVault? instance;
+
+  factory RecipeVault() {
+    instance = instance ?? RecipeVault._internal();
+
+    return instance!;
+  }
+
+  RecipeVault._internal();
+
+  Future<String> get localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
+  Future<File> get localFile async {
+    final path = await localPath;
+
+    return File('$path/recipes.txt');
+  }
+}
+
+Future<List<Recipe>> _readFile() async {
+  try {
+    final file = await RecipeVault.instance?.localFile;
+
+    final contents = await file?.readAsString();
+    final List<dynamic> caches = await json.decode(contents!);
+    final results = caches.map((e) => Recipe.fromJson(e)).toList();
+
+    return results;
+  } catch (e) {
+    return [];
+  }
+}
+
+Future<void> _writeFile(List<Recipe> state) async {
+  final file = await RecipeVault.instance?.localFile;
+  final encoded = jsonEncode(state);
+
+  await file?.writeAsString(encoded);
+}
+
+
+
+// /// File Storage
+// @visibleForTesting
+// Future<String> get localPath async {
+//   final directory = await getApplicationDocumentsDirectory();
+//
+//   return directory.path;
+// }
+//
+// @visibleForTesting
+// Future<File> get localFile async {
+//   final path = await localPath;
+//
+//   return File('$path/recipes.txt');
+// }
 
 // An object that controls a list of [Recipe]
 class RecipeState extends StateNotifier<List<Recipe>> {
   RecipeState([List<Recipe>? initialRecipes]) : super(initialRecipes ?? []);
 
-  void add({required String name, String? ingredients, String? description}) {
+  Future<void> add(
+      {required String name, String? ingredients, String? description}) async {
     state = [
-      ...state,
       Recipe.add(
         name: name,
         ingredients: ingredients,
         description: description,
       ),
+      ...state
     ];
+
+    await _writeFile(state);
   }
 
-  void update({
+  Future<void> update({
     required String id,
     required String name,
     String? ingredients,
     String? description,
-  }) {
+  }) async {
     final recipe = state.firstWhere((Recipe element) => element.id == id);
     state.removeWhere((Recipe element) => element.id == id);
 
     state = [
-      ...state,
       Recipe(
         id: recipe.id,
         name: name,
         ingredients: ingredients,
         description: description,
-      )
+      ),
+      ...state
     ];
+
+    await _writeFile(state);
   }
 
-  void remove(String id) {
+  Future<void> remove(String id) async {
     state = state.where((Recipe element) => element.id != id).toList();
+
+    await _writeFile(state);
   }
 }
 
 class RecipeSearchState extends StateNotifier<List<Recipe>> {
-  RecipeSearchState([List<Recipe>? initialRecipes]) : super(initialRecipes ?? []);
+  RecipeSearchState([List<Recipe>? initialRecipes])
+      : super(initialRecipes ?? []);
 
   void filter(String v) {
     state = state.where((element) => element.name.contains(v)).toList();
@@ -53,14 +131,24 @@ class RecipeSearchState extends StateNotifier<List<Recipe>> {
   }
 }
 
-// class RecipeSearchState extends
-
-/// Params takes controller and an object
+/// In-memory data source
 final recipesProvider = StateNotifierProvider<RecipeState, List<Recipe>>((ref) {
   return RecipeState();
 });
 
-final recipesSearcher = StateNotifierProvider<RecipeSearchState, List<Recipe>>((ref) {
+/// Cache from disk
+/// https://riverpod.dev/docs/providers/future_provider
+final recipesCache = FutureProvider<List<Recipe>>((ref) async {
+  RecipeVault();
+  final caches = await _readFile();
+  ref.read(recipesProvider).addAll(caches);
+
+  return caches;
+});
+
+/// In-memory data source for search
+final recipesSearcher =
+    StateNotifierProvider<RecipeSearchState, List<Recipe>>((ref) {
   final originalRecipes = ref.watch(recipesProvider);
 
   return RecipeSearchState(originalRecipes);

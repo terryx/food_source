@@ -14,6 +14,8 @@ import 'package:food_source/main.dart';
 import 'package:food_source/view/edit_food.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'mock/recipe_vault.dart';
+
 Future<void> _addRecipe(WidgetTester tester, [name = 'Name Test']) async {
   await tester.tap(find.byKey(const Key('AddFood')));
   await tester.pumpAndSettle();
@@ -32,6 +34,10 @@ Future<void> _addRecipe(WidgetTester tester, [name = 'Name Test']) async {
 }
 
 void main() {
+  setUp(() async {
+    RecipeVault.instance = MockRecipeVault();
+  });
+
   testWidgets('Add Food view is visible', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp(initialRoute: '/add_food'));
     const key = ValueKey('AddFoodForm');
@@ -123,10 +129,31 @@ void main() {
     expect(find.widgetWithText(ListTile, 'Pin abc'), findsOneWidget);
   });
 
+  testWidgets('Cannot edit recipe without name', (WidgetTester tester) async {
+    const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
+
+    await tester.pumpWidget(myapp);
+    await _addRecipe(tester, 'Pineapple');
+    await tester.tap(find.text('Pineapple'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(EditFoodViewState.scaffoldKey), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'Pineapple'), findsOneWidget);
+
+    await tester.enterText(
+        find.widgetWithText(TextFormField, 'Pineapple'), '');
+    await tester.tap(find.byKey(EditFoodViewState.saveFoodKey));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(EditFoodViewState.scaffoldKey), findsOneWidget);
+  });
+
   testWidgets('Can remove recipe', (WidgetTester tester) async {
     const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
 
     await tester.pumpWidget(myapp);
+    // await tester.pump();
+
     await _addRecipe(tester, 'Pineapple');
     await tester.tap(find.text('Pineapple'));
     await tester.pumpAndSettle();

@@ -27,12 +27,12 @@ class AddFoodViewState extends ConsumerState<AddFoodView> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('SaveFood'),
-        onPressed: () {
+        onPressed: () async {
           if (!_formKey.currentState!.validate()) {
             return;
           }
 
-           ref.read(recipesProvider.notifier).add(
+          await ref.read(recipesProvider.notifier).add(
             name: nameController.text,
             ingredients: ingrController.text,
             description: descController.text,
