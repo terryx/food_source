@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/widgets.dart';
 import 'package:food_source/model/recipe.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
@@ -9,16 +8,10 @@ import 'package:riverpod/riverpod.dart';
 /// 1. Support riverpod provider
 /// 2. Support device disk access
 /// 3. Support a separated search for cleaner data manipulation
-class RecipeVault {
-  static RecipeVault? instance;
+class _RecipeVaultProvider extends RecipeVault {}
 
-  factory RecipeVault() {
-    instance = instance ?? RecipeVault._internal();
-
-    return instance!;
-  }
-
-  RecipeVault._internal();
+abstract class RecipeVault {
+  static RecipeVault instance = _RecipeVaultProvider();
 
   Future<String> get localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -35,10 +28,10 @@ class RecipeVault {
 
 Future<List<Recipe>> _readFile() async {
   try {
-    final file = await RecipeVault.instance?.localFile;
+    final file = await RecipeVault.instance.localFile;
 
-    final contents = await file?.readAsString();
-    final List<dynamic> caches = await json.decode(contents!);
+    final contents = await file.readAsString();
+    final List<dynamic> caches = await json.decode(contents);
     final results = caches.map((e) => Recipe.fromJson(e)).toList();
 
     return results;
@@ -48,10 +41,10 @@ Future<List<Recipe>> _readFile() async {
 }
 
 Future<void> _writeFile(List<Recipe> state) async {
-  final file = await RecipeVault.instance?.localFile;
+  final file = await RecipeVault.instance.localFile;
   final encoded = jsonEncode(state);
 
-  await file?.writeAsString(encoded);
+  await file.writeAsString(encoded);
 }
 
 // An object that controls a list of [Recipe]
@@ -122,7 +115,6 @@ final recipesProvider = StateNotifierProvider<RecipeState, List<Recipe>>((ref) {
 /// Cache from disk
 /// https://riverpod.dev/docs/providers/future_provider
 final recipesCache = FutureProvider<List<Recipe>>((ref) async {
-  RecipeVault();
   final caches = await _readFile();
   ref.read(recipesProvider).addAll(caches);
 

@@ -9,9 +9,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../mock/recipe_vault.dart';
 
-/// 3 Level of widget/component test
 /// The high level focus on multiple widgets, you ensure the screen is loaded without UI issues.
 /// The low level focus on single widget, you ensure a widget can work in isolation.
+
+class FakeRecipeVault extends Fake implements RecipeVault {}
+
 void main() {
   const key = Key('RecipeList');
   setUp(() async {
@@ -19,7 +21,7 @@ void main() {
   });
 
   tearDown(() async {
-    RecipeVault.instance = null;
+    RecipeVault.instance = FakeRecipeVault();
   });
 
   /// High level
