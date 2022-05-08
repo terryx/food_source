@@ -1,4 +1,6 @@
 # food_source
+[![codecov](https://codecov.io/gh/terryx/food_source/branch/main/graph/badge.svg?token=4ZR7MW5ZN1)](https://codecov.io/gh/terryx/food_source)
+
 ![Wireframe](./wireframe.png)
 
 ---
