@@ -29,5 +29,10 @@ ThemeData lightTheme() {
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.green[600],
     ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+      },
+    ),
   );
 }

@@ -7,13 +7,13 @@ import 'package:food_source/main.dart';
 import 'package:food_source/view/splash.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../mock/recipe_vault.dart';
+import '../fake/recipe_vault.dart';
 
 /// Test with context using global key
 /// More info refer to https://github.com/flutter/flutter/blob/e7b7ebc066c1b2a5aa5c19f8961307427e0142a6/packages/flutter/test/cupertino/localizations_test.dart#L38
 void main() {
   setUp(() async {
-    RecipeVault.instance = MockRecipeVault();
+    RecipeVault.instance = FakeRecipeVault();
   });
 
   testWidgets('My app initial route on SplashView transition',

@@ -99,7 +99,11 @@ class RecipeSearchState extends StateNotifier<List<Recipe>> {
       : super(initialRecipes ?? []);
 
   void filter(String v) {
-    state = state.where((element) => element.name.contains(v)).toList();
+    final sanitised = v.toLowerCase();
+
+    state = state
+        .where((element) => element.name.toLowerCase().contains(sanitised))
+        .toList();
   }
 
   void restore(List<Recipe> r) {

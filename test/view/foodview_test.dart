@@ -7,10 +7,13 @@ import 'package:food_source/main.dart';
 import 'package:food_source/model/recipe.dart';
 import 'package:food_source/view/edit_food.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:faker/faker.dart';
 
-import '../mock/recipe_vault.dart';
+import '../fake/recipe_vault.dart';
 
 Future<void> _addRecipe(WidgetTester tester, [name = 'Name Test']) async {
+  final faker = Faker(provider: FakerDataProviderFa());
+  final fakeSentences100 = faker.lorem.sentences(100).join('\n');
   await tester.tap(find.byKey(const Key('AddFood')));
   await tester.pumpAndSettle();
 
@@ -21,7 +24,7 @@ Future<void> _addRecipe(WidgetTester tester, [name = 'Name Test']) async {
 
   await tester.enterText(nameKey, name);
   await tester.enterText(ingrKey, 'Ingredients Test');
-  await tester.enterText(descKey, 'Description Test');
+  await tester.enterText(descKey, fakeSentences100);
 
   await tester.tap(saveKey);
   await tester.pumpAndSettle();
@@ -29,7 +32,7 @@ Future<void> _addRecipe(WidgetTester tester, [name = 'Name Test']) async {
 
 void main() {
   setUp(() async {
-    RecipeVault.instance = MockRecipeVault();
+    RecipeVault.instance = FakeRecipeVault();
   });
 
   testWidgets('Add Food view is visible', (WidgetTester tester) async {
@@ -39,6 +42,7 @@ void main() {
   });
 
   testWidgets('Can add new recipe', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(640, 320));
     WidgetRef? ref;
     final myapp = ProviderScope(
       child: Consumer(
@@ -62,7 +66,6 @@ void main() {
 
     expect(find.byKey(const Key('RecipeList')), findsOneWidget);
     expect(ref?.read(recipesProvider).length, 25);
-    expect(find.text('Name Test'), findsNWidgets(5));
   });
 
   testWidgets('Cannot add new recipe if no name present',
@@ -99,7 +102,7 @@ void main() {
   });
 
   testWidgets('Can edit recipe', (WidgetTester tester) async {
-    RecipeVault.instance = MockRecipeVault(
+    RecipeVault.instance = FakeRecipeVault(
       initialRecipes: [Recipe.add(name: 'Pineapple')],
     );
     WidgetRef? ref;
@@ -134,6 +137,41 @@ void main() {
     expect(ref?.read(recipesProvider).first.name, 'Pin a');
     expect(ref?.read(recipesProvider).first.ingredients, 'Ing a');
     expect(ref?.read(recipesProvider).first.description, 'Des a');
+  });
+
+  testWidgets('Can edit in long texts', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(640, 320));
+    final faker = Faker(provider: FakerDataProviderFa());
+    final fakeSentences50 = faker.lorem.sentences(50).join('\n');
+    final fakeSentences100 = faker.lorem.sentences(100).join('\n');
+
+    RecipeVault.instance = FakeRecipeVault(initialRecipes: [
+      Recipe.add(
+        name: 'Pineapple',
+        ingredients: fakeSentences50,
+        description: fakeSentences50,
+      ),
+    ]);
+
+    const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
+
+    await tester.pumpWidget(myapp);
+    await tester.pump();
+    await tester.tap(find.text('Pineapple'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(EditFoodViewState.scaffoldKey), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'Pineapple'), findsOneWidget);
+
+    final ingKey = find.byKey(EditFoodViewState.textIngrKey);
+    final desKey = find.byKey(EditFoodViewState.textDescKey);
+    await tester.enterText(ingKey, fakeSentences100);
+    await tester.enterText(desKey, fakeSentences100);
+
+    expect(
+      find.widgetWithText(TextFormField, fakeSentences100),
+      findsNWidgets(2),
+    );
   });
 
   testWidgets('Cannot edit recipe without name', (WidgetTester tester) async {

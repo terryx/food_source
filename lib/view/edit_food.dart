@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:food_source/controller/recipe.dart';
 import 'package:food_source/localization.dart';
 import 'package:food_source/model/recipe.dart';
+import 'package:food_source/widget/recipe_form.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class EditFoodView extends StatefulHookConsumerWidget {
@@ -31,7 +32,7 @@ class EditFoodViewState extends ConsumerState<EditFoodView> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: Text(Lz.of(context)!.addFood),
+        title: Text(Lz.of(context)!.editFood),
         actions: [
           IconButton(
             key: delFoodKey,
@@ -66,56 +67,11 @@ class EditFoodViewState extends ConsumerState<EditFoodView> {
         label: Text(Lz.of(context)!.save),
         backgroundColor: Colors.green,
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                key: textNameKey,
-                controller: nameController,
-                decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Name',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return Lz.of(context)!.requiredText;
-                  }
-                  return null;
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                key: const Key('Ingredients'),
-                controller: ingrController,
-                minLines: 5,
-                maxLines: 10,
-                decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Ingredients',
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                key: const Key('Description'),
-                controller: descController,
-                minLines: 5,
-                maxLines: 10,
-                decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Description',
-                ),
-              ),
-            )
-          ],
-        ),
+      body: RecipeForm(
+        formKey: _formKey,
+        nameController: nameController,
+        ingrController: ingrController,
+        descController: descController,
       ),
     );
   }

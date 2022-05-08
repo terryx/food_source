@@ -80,6 +80,46 @@ class S {
     );
   }
 
+  /// `Edit Recipe`
+  String get editFood {
+    return Intl.message(
+      'Edit Recipe',
+      name: 'editFood',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Name`
+  String get recipeName {
+    return Intl.message(
+      'Name',
+      name: 'recipeName',
+      desc: 'Capitalise recipe Name',
+      args: [],
+    );
+  }
+
+  /// `Ingredients`
+  String get recipeIngr {
+    return Intl.message(
+      'Ingredients',
+      name: 'recipeIngr',
+      desc: 'Capitalise recipe Ingredients',
+      args: [],
+    );
+  }
+
+  /// `Description`
+  String get recipeDesc {
+    return Intl.message(
+      'Description',
+      name: 'recipeDesc',
+      desc: 'Capitalise recipe Description',
+      args: [],
+    );
+  }
+
   /// `Save`
   String get save {
     return Intl.message(

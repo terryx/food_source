@@ -6,6 +6,22 @@
   },
   "tagline": "Healthy body start with healthy food",
   "addFood": "Add Recipe",
+  "editFood": "Edit Recipe",
+  "recipeName": "Name",
+  "@recipeName": {
+    "description": "Capitalise recipe Name",
+    "type": "text"
+  },
+  "recipeIngr": "Ingredients",
+  "@recipeIngr": {
+    "description": "Capitalise recipe Ingredients",
+    "type": "text"
+  },
+  "recipeDesc": "Description",
+  "@recipeDesc": {
+    "description": "Capitalise recipe Description",
+    "type": "text"
+  },
   "save": "Save",
   "requiredText": "Please enter some text",
   "@requiredText": {

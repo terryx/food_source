@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:food_source/controller/recipe.dart';
 import 'package:file/memory.dart';
 import 'package:food_source/model/recipe.dart';
-import 'package:mockito/mockito.dart';
 
 /// Reference 1 https://blog.victoreronmosele.com/mocking-filesystems-dart?x-host=blog.victoreronmosele.com
 /// Reference 2 https://github.com/dart-lang/sdk/blob/f10a70ebda1672afa3feb1e970dcf4f1b5331467/pkg/front_end/test/memory_file_system_test.dart#L50
-class MockRecipeVault extends Mock implements RecipeVault {
-  MockRecipeVault({List<Recipe>? initialRecipes, String? contents})
+class FakeRecipeVault extends Fake implements RecipeVault {
+  FakeRecipeVault({List<Recipe>? initialRecipes, String? contents})
       : _initialRecipes = initialRecipes,
         _contents = contents;
 
@@ -35,5 +35,3 @@ class MockRecipeVault extends Mock implements RecipeVault {
     return file;
   }
 }
-
-class MockRecipeVault2 extends Mock implements RecipeVault {}
