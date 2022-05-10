@@ -23,7 +23,10 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "addFood": MessageLookupByLibrary.simpleMessage("Add Recipe"),
+        "deleteWarning":
+            MessageLookupByLibrary.simpleMessage("Are you sure to delete?"),
         "editFood": MessageLookupByLibrary.simpleMessage("Edit Recipe"),
+        "no": MessageLookupByLibrary.simpleMessage("No"),
         "recipeDesc": MessageLookupByLibrary.simpleMessage("Description"),
         "recipeIngr": MessageLookupByLibrary.simpleMessage("Ingredients"),
         "recipeName": MessageLookupByLibrary.simpleMessage("Name"),
@@ -32,6 +35,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "save": MessageLookupByLibrary.simpleMessage("Save"),
         "tagline": MessageLookupByLibrary.simpleMessage(
             "Healthy body start with healthy food"),
-        "title": MessageLookupByLibrary.simpleMessage("Food Source")
+        "title": MessageLookupByLibrary.simpleMessage("Food Source"),
+        "yes": MessageLookupByLibrary.simpleMessage("Yes")
       };
 }

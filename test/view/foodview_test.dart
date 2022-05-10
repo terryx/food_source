@@ -6,6 +6,7 @@ import 'package:food_source/localization.dart';
 import 'package:food_source/main.dart';
 import 'package:food_source/model/recipe.dart';
 import 'package:food_source/view/edit_food.dart';
+import 'package:food_source/view/home.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:faker/faker.dart';
 
@@ -194,19 +195,61 @@ void main() {
 
   testWidgets('Can remove recipe', (WidgetTester tester) async {
     const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
-
     await tester.pumpWidget(myapp);
-    // await tester.pump();
 
     await _addRecipe(tester, 'Pineapple');
     await tester.tap(find.text('Pineapple'));
-    await tester.pumpAndSettle();
 
+    /// 1. Edit screen
+    await tester.pumpAndSettle();
+    expect(find.byKey(EditFoodViewState.scaffoldKey), findsOneWidget);
+
+    /// 2. Tap on bin button
     await tester.tap(find.byKey(EditFoodViewState.delFoodKey));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
-    expect(find.byKey(EditFoodViewState.scaffoldKey), findsNothing);
-    expect(find.widgetWithText(ListTile, 'Pineapple'), findsNothing);
-    expect(find.byType(ListTile), findsNothing);
+    /// 3. Show pop up to confirm
+    expect(find.byType(AlertDialog), findsOneWidget);
+
+    /// 4. * Tap yes
+    await tester.tap(find.byKey(const Key('Yes')));
+
+    /// 5. Item deleted and go back to home screen
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeViewMainContent.searchKey), findsOneWidget);
+  });
+
+  testWidgets('Can dismiss/cancel removal', (WidgetTester tester) async {
+    const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
+    await tester.pumpWidget(myapp);
+
+    await _addRecipe(tester, 'Pineapple');
+    await tester.tap(find.text('Pineapple'));
+
+    /// 1. Edit screen
+    await tester.pumpAndSettle();
+    expect(find.byKey(EditFoodViewState.scaffoldKey), findsOneWidget);
+
+    /// 2. Tap on bin button
+    await tester.tap(find.byKey(EditFoodViewState.delFoodKey));
+    await tester.pump();
+
+    /// 3. Show pop up to confirm
+    expect(find.byType(AlertDialog), findsOneWidget);
+
+    /// 4. * Tap no
+    await tester.tap(find.byKey(const Key('No')));
+    expect(find.byKey(EditFoodViewState.scaffoldKey), findsOneWidget);
+    await tester.pump();
+
+    /// 5. Tap confirm to delete again
+    await tester.tap(find.byKey(EditFoodViewState.delFoodKey));
+    await tester.pump();
+    expect(find.byType(AlertDialog), findsOneWidget);
+
+    /// https://github.com/flutter/flutter/blob/master/packages/flutter/test/material/dialog_test.dart
+    await tester.tapAt(const Offset(10.0, 10.0));
+    await tester.pump();
+    expect(find.byType(AlertDialog), findsNothing);
   });
 }

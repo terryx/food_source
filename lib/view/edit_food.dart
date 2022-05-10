@@ -38,8 +38,38 @@ class EditFoodViewState extends ConsumerState<EditFoodView> {
             key: delFoodKey,
             icon: const Icon(Icons.delete_rounded, color: Colors.redAccent),
             onPressed: () {
-              ref.read(recipesProvider.notifier).remove(args.id);
-              Navigator.pop(context);
+              showDialog<void>(
+                  context: context,
+                  builder: (BuildContext c) {
+                    return AlertDialog(
+                      title: Text(args.name),
+                      content: SingleChildScrollView(
+                        child: ListBody(
+                          children: [
+                            Text(Lz.of(context)!.deleteWarning),
+                          ],
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          key: const Key('No'),
+                          child: Text(Lz.of(context)!.no),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        TextButton(
+                          key: const Key('Yes'),
+                          child: Text(Lz.of(context)!.yes),
+                          onPressed: () => ref
+                              .read(recipesProvider.notifier)
+                              .remove(args.id)
+                              .whenComplete(
+                                () => Navigator.popUntil(
+                                    context, ModalRoute.withName('/home')),
+                              ),
+                        ),
+                      ],
+                    );
+                  });
             },
           )
         ],

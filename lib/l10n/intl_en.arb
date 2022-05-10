@@ -23,9 +23,16 @@
     "type": "text"
   },
   "save": "Save",
+  "yes": "Yes",
+  "no": "No",
   "requiredText": "Please enter some text",
   "@requiredText": {
     "description": "Validation text",
+    "type": "text"
+  },
+  "deleteWarning": "Are you sure to delete?",
+  "@deleteWarning": {
+    "description": "Confirmation to delete",
     "type": "text"
   }
 }

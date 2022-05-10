@@ -130,12 +130,42 @@ class S {
     );
   }
 
+  /// `Yes`
+  String get yes {
+    return Intl.message(
+      'Yes',
+      name: 'yes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No`
+  String get no {
+    return Intl.message(
+      'No',
+      name: 'no',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Please enter some text`
   String get requiredText {
     return Intl.message(
       'Please enter some text',
       name: 'requiredText',
       desc: 'Validation text',
+      args: [],
+    );
+  }
+
+  /// `Are you sure to delete?`
+  String get deleteWarning {
+    return Intl.message(
+      'Are you sure to delete?',
+      name: 'deleteWarning',
+      desc: 'Confirmation to delete',
       args: [],
     );
   }
