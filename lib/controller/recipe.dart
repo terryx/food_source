@@ -10,6 +10,8 @@ import 'package:riverpod/riverpod.dart';
 /// 3. Support a separated search for cleaner data manipulation
 class _RecipeVaultProvider extends RecipeVault {}
 
+/// TODO: https://stackoverflow.com/questions/62597011/mock-getexternalstoragedirectory-on-flutter
+/// Not going to mock this until Flutter standardised for common platform behaviour
 abstract class RecipeVault {
   static RecipeVault instance = _RecipeVaultProvider();
 
