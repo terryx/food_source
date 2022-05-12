@@ -39,7 +39,7 @@ class HomeViewMainContent extends HookConsumerWidget {
     final cacheRecipes = ref.watch(recipesCache); // cold cache
 
     return cacheRecipes.when(
-      loading: () => const CircularProgressIndicator(),
+      loading: () => const LinearProgressIndicator(),
       error: (err, stack) => const Text('Error'),
       data: (caches) {
         return Column(

@@ -27,7 +27,7 @@ void main() {
       const ProviderScope(child: MyApp(home: HomeView())),
     );
 
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
     await tester.pump();
 
     expect(find.byKey(key), findsOneWidget);
