@@ -11,17 +11,12 @@ Before starting any tests, it is good to lay out the steps and expectation of a 
 /// 5.1  Verify popup did disappear as nothing happen
 ```
  
+ Next, create a scaffold for test, wrapping `MyApp` with a ProviderScope from riverpod
 ```dart
 testWidgets('Can dismiss/cancel removal', (WidgetTester tester) async {
- // Test code here...
-});
-```
-
-Next, create a scaffold for test, wrapping `MyApp` with a ProviderScope from riverpod
-```dart
-// Test code here...
-const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
+    const myapp = ProviderScope(child: MyApp(initialRoute: '/home'));
     await tester.pumpWidget(myapp);
+});
 ```
 
 Expand each step into tests
